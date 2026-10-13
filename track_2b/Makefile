@@ -1,6 +1,11 @@
-.PHONY: run
-
-# Replace with the command that starts the project in a Docker container,
-# e.g. `docker compose up`. It must work from a clean checkout.
-run:
-	@echo "make run is not implemented yet — edit this Makefile"; exit 1
+PYTHON ?= python3
+.PHONY: run run-native test docker-build docker-run
+run: docker-build docker-run
+run-native:
+	$(PYTHON) -B container_entrypoint.py
+test:
+	$(PYTHON) -B -m unittest discover -s tests -v
+docker-build:
+	docker build -t sentinel-apertus-2b .
+docker-run:
+	docker run --rm -e LLM_API_KEY -e LLM_NAME -e LLM_BASE_URL -e CSCS_INFERENCE_API_KEY -e APERTUS_MODEL -e CSCS_BASE_URL -v "$(CURDIR)/data:/app/data" sentinel-apertus-2b
